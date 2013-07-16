@@ -1,8 +1,0 @@
-*.class
-*.cache
-*.apk
-*.ap_
-*.dex
-*.*.class
-*.jar
-libs/*

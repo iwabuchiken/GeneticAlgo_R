@@ -1,0 +1,2 @@
+a
+pushd C:\WORKS\WS\WS_Android_20130619_090924\GeneticAlgo_R\D-2
