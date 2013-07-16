@@ -1,145 +1,187 @@
 require 'matrix'
 
 $num_of_genes = 4
+$values = []
+$genes = []
 
-=begin
-    Return
-        false   Lengths of the two parameters not equal
-=end
-def sum_of_elements(a1)
-    # If an empty array, then return 0
-    if a1.length < 1
-        
-        return 0
-        
-    end
-    
-    sum = 0
-    
-    a1.each {|x|
-    
-        sum += x
-        
-    }
-    
-    return sum
-    
-end#def sum_of_elements(a1)
-
-def array_product(a1, a2)
-    # If the lengths not equal, then return nil
-    if a1.length != a2.length
-        
-        return nil
-        
-    end
-    
-    product = []
-    
-    a1.each_index {|i|
-    
-        product.push(a1[i] * a2[i])
-    
-    }
-    
-    return product
-    
-end#def array_product(a1, a2)
+class Basic
 
 =begin
   Return
         -1      The array product is nil
 =end
-def evaluate(values, gene)
-    # If the lengths not equal, then return false
-    if values.length != gene.length
+    def self.evaluate(values, gene)
+#    def evaluate(values, gene)
+        # If the lengths not equal, then return false
+        if values.length != gene.length
+            
+            return false
+            
+        end
         
-        return false
+        # Get product
+        product = self.class.array_product(values, gene)
         
-    end
-    
-    # Get product
-    product = array_product(values, gene)
-    
-    # Validate
-    if product == nil
+        # Validate
+        if product == nil
+            
+            return -1
+        end
         
-        return -1
-    end
-    
-    # Get sum
-    return sum_of_elements(product)
-    
-end#def evaluate
+        # Get sum
+        return sum_of_elements(product)
+        
+    end#def evaluate
 
+    def self.show_genes(genes, values)
+    
+        genes.length.times do |i|
+            
+            print "gene[#{i}] = "; p genes[i]
+            
+            print "\tProduct => "; p self.class.array_product(values, genes[i])
+            
+            # REF http://okwave.jp/qa/q4910050.html 2009-04-26 12:21:11
+            print "\tEvaluate => "; p self.class.evaluate(values, genes[i])
+            
+            puts
+            
+        end
+        
+    end#def show_genes(genes)
+
+    def self.array_product(a1, a2)
+        # If the lengths not equal, then return nil
+        if a1.length != a2.length
+            
+            return nil
+            
+        end
+        
+        product = []
+        
+        a1.each_index {|i|
+        
+            product.push(a1[i] * a2[i])
+        
+        }
+        
+        return product
+        
+    end#def array_product(a1, a2)
+
+=begin
+    Return
+        false   Lengths of the two parameters not equal
+=end
+    def self.sum_of_elements(a1)
+        # If an empty array, then return 0
+        if a1.length < 1
+            
+            return 0
+            
+        end
+        
+        sum = 0
+        
+        a1.each {|x|
+        
+            sum += x
+            
+        }
+        
+        return sum
+        
+    end#def sum_of_elements(a1)
+    
+end
+
+class Init
+    
 =begin
   Values    => 1 ~ 9
   Return    => Array
   Parameter => Number of elements to be pushed into the array
             => Default ==> 6
 =end
-def init_values(num_of_elements = 6)
+    def init_values(num_of_elements = 6)
+    
+        values = []
+        
+        num_of_elements.times do
+            
+            values.push(rand(9) + 1)
+            
+        end
+            
+        return values
+      
+    end#def init_values
+    
+    def init_gene(num_of_elements = 6)
+        
+        gene = []
+        
+        num_of_elements.times do
+            
+            gene.push(rand(2))
+            
+        end
+        
+        return gene
+        
+    end#def init_gene
+end
 
-    values = []
+def get_weighted_array(genes, values)
     
-    num_of_elements.times do
-        
-        values.push(rand(9) + 1)
-        
-    end
-        
-    return values
-  
-end#def init_values
-
-def init_gene(num_of_elements = 6)
+    # Create a reference array for weighted random choosing
+    reference = []
     
-    gene = []
+    # For each element in genes, get the evaluation  
+    # => value of it, then push into the reference 
+    # => array the index number of the element for 
+    # => evaluation value times
+    genes.each_with_index do |elem, i|
+        
+        Basic.evaluate(values, elem).length do
+            
+            reference.push(i)
+            
+        end
+        
+    end#genes.each_with_index do |elem, i|
     
-    num_of_elements.times do
-        
-        gene.push(rand(2))
-        
-    end
+    return referernce
     
-    return gene
-    
-end#def init_gene
-
-def show_genes(genes, values)
-    
-    genes.length.times do |i|
-        
-        print "gene[#{i}] = "; p genes[i]
-        
-        print "\tProduct => "; p array_product(values, genes[i])
-        print "\tEvaluate => "; p evaluate(values, genes[i])
-        
-        puts
-        
-    end
-    
-end#def show_genes(genes)
+end#def get_weighted_array(genes, values)
 
 def do_job
+    
+    # Instantiate classes
+#    b = Basic.new()
+    init = Init.new()
 
     # Init & show values array
 #    values = init_values
-    values = [1,2,3,4,5,6]
+    $values = init.init_values
     
-    print "values="; p values
-    print "\tEvaluate => "; puts sum_of_elements(values)
+    print "values="; p $values
+    print "\tEvaluate => "; puts Basic.sum_of_elements($values)
 
     # Init genes
-    genes = []
     $num_of_genes.times do |i|
         
-        genes.push(init_gene)
+        $genes.push(init.init_gene)
         
     end
     
     # Show genes
-    show_genes(genes, values)
+#    show_genes(genes, values)
+    Basic.show_genes($genes, $values)
+    
+    # Test: Weitghted array
+    p get_weighted_array($genes, $values)
 
 =begin
     g1 = init_gene
