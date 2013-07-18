@@ -126,7 +126,7 @@ module Basic
         # => evaluation value times
         genes.each_with_index do |elem, i|
             
-            Basic.evaluate(values, elem).length do
+            Basic.evaluate(values, elem).times do
                 
                 reference.push(i)
                 
@@ -134,7 +134,7 @@ module Basic
             
         end#genes.each_with_index do |elem, i|
         
-        return referernce
+        return reference
         
     end#def get_weighted_array(genes, values)
 
@@ -161,46 +161,32 @@ module Basic
     
 end#module Basic
 
-=begin
-  Return
-        -1      The array product is nil
-=end
-def evaluate(values, gene)
-    # If the lengths not equal, then return false
-    if values.length != gene.length
+module GeneProc
+    
+    def choose_parent(genes, values)
         
-        return false
+        # Weighted array
+        weighted = Basic.get_weighted_array(genes, values)
         
-    end
-    
-    # Get product
-    product = Basic.array_product(values, gene)
-    
-    # Validate
-    if product == nil
-        
-        return -1
-    end
-    
-    # Get sum
-    return Basic.sum_of_elements(product)
-    
-end#def evaluate
+        # Get parent
+        parent1 = genes[weighted[rand(weighted.length)]]
+        parent2 = genes[weighted[rand(weighted.length)]]
 
-def show_genes(genes, values)
+        
+        while parent1 == parent2 do
+            
+            parent1 = genes[weighted[rand(weighted.length)]]
+            parent2 = genes[weighted[rand(weighted.length)]]
+            
+        end#while parent1 == parent2 do
+        
+        return [parent1, parent2]
+        
+    end#def choose_parent(genes)
     
-    genes.length.times do |i|
-        
-        print "gene[#{i}] = "; p genes[i]
-        
-        print "\tProduct => "; p Basic.array_product(values, genes[i])
-        print "\tEvaluate => "; p evaluate(values, genes[i])
-        
-        puts
-        
-    end
+    module_function :choose_parent
     
-end#def show_genes(genes)
+end#module GeneProc
 
 def do_job
     
@@ -208,7 +194,6 @@ def do_job
     init = Init.new
 
     # Init & show values array
-#    values = init_values
     values = init.init_values
     
     print "values="; p values
@@ -224,6 +209,19 @@ def do_job
     
     # Show genes
     Basic.show_genes(genes, values)
+    
+    # Show weighted array
+    puts
+    puts "<Weighted array>"
+    
+    p Basic.get_weighted_array(genes, values)
+    
+    # Choose parent
+    parents = GeneProc.choose_parent(genes, values)
+
+    puts
+    puts "<Parents>"
+    p parents
 
 =begin
     g1 = init_gene
