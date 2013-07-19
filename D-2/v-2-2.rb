@@ -205,58 +205,30 @@ def do_job
 
     # Init genes
     genes = []
-    $num_of_genes.times do |i|
-        
-        genes.push(init.init_gene)
-        
-    end
-
-    
-    genes2 = []
     
     $num_of_genes.times do |i|
-        
+        # Instance of Gene
         g = Gene.new
-        g.gene = init.init_gene
         
-        genes2.push(g)
+        # Get data
+        g.gene = init.init_gene
+        g.suited = Basic.evaluate(g.gene, values)
+        g.generation = g.get_current_generation
+        g.in_generation_serial = i + 1
+        
+        genes.push(g)
         
     end    
-    
-    
-    # Show genes
-    Basic.show_genes(genes, values)
-    
-    # Show weighted array
-    puts
-    puts "<Weighted array>"
-    
-    p Basic.get_weighted_array(genes, values)
-    
-    # Choose parent
-    parents = GeneProc.choose_parent(genes, values)
-
-    puts
-    puts "<Parents>"
-    p parents
     
     # class Gene
     puts
     puts "<Gene>"
     
-    g1 = Gene.new
-    g1.suited = 13
-    
-    p "g1.suited=#{g1.suited}"
-    
-    # gene
-    g1.gene = init.init_gene
-    
-    p "g1.gene=#{g1.gene}"
-    
     puts
-    p "genes2=#{genes2}"
+    p "genes=#{genes}"
     
+#    puts
+#    puts "Gene.current_generation=#{Gene.current_generation}"
 
 =begin
     g1 = init_gene
